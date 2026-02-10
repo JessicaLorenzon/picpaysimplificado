@@ -4,9 +4,7 @@ import com.picpaysimplificado.domain.usuario.TipoUsuario;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.math.BigDecimal;
-
-public record UsuarioRequestDTO(
+public record RegistroRequestDTO(
         @NotBlank
         String nomeCompleto,
         @NotBlank
@@ -16,6 +14,5 @@ public record UsuarioRequestDTO(
         @NotBlank
         String senha,
         @NotNull
-        TipoUsuario tipo,
-        BigDecimal saldo) {
+        TipoUsuario tipo) {
 }

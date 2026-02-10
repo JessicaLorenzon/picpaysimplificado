@@ -1,6 +1,6 @@
 package com.picpaysimplificado.domain.usuario;
 
-import com.picpaysimplificado.domain.usuario.dto.UsuarioRequestDTO;
+import com.picpaysimplificado.domain.usuario.dto.RegistroRequestDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,22 +31,18 @@ public class Usuario {
 
     private BigDecimal saldo;
 
-    public Usuario(String nomeCompleto, String cpf, String email, String senha, TipoUsuario tipo) {
-        this.nomeCompleto = nomeCompleto;
-        this.cpf = cpf;
-        this.email = email;
-        this.senha = senha;
-        this.tipo = tipo;
-        this.saldo = BigDecimal.ZERO;
-    }
 
-    public Usuario(UsuarioRequestDTO body) {
+    public Usuario(RegistroRequestDTO body) {
         this.nomeCompleto = body.nomeCompleto();
         this.cpf = body.cpf();
         this.email = body.email();
         this.senha = body.senha();
         this.tipo = body.tipo();
-        this.saldo = body.saldo();
+        this.saldo = BigDecimal.ZERO;
+    }
+
+    public Boolean podeTransferir() {
+        return getTipo() != TipoUsuario.LOJISTA;
     }
 
     public void debitar(BigDecimal valor) {

@@ -1,6 +1,7 @@
 package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.usuario.Usuario;
+import com.picpaysimplificado.exceptions.UsuarioNaoEncontradoException;
 import com.picpaysimplificado.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class UsuarioService {
     }
 
     @Transactional
-    public void depositar(Usuario usuario, BigDecimal quantia) {
+    public void depositar(BigDecimal quantia, Long idDestinatario) {
+        Usuario usuario = usuarioRepository.findById(idDestinatario).orElseThrow(() -> new UsuarioNaoEncontradoException(idDestinatario));
         usuario.creditar(quantia);
     }
 }

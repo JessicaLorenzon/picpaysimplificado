@@ -1,14 +1,16 @@
 package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.transferencia.Transferencia;
-import com.picpaysimplificado.domain.usuario.TipoUsuario;
 import com.picpaysimplificado.domain.usuario.Usuario;
+import com.picpaysimplificado.exceptions.SaldoInsuficienteException;
+import com.picpaysimplificado.exceptions.TransferenciaImpedidaException;
 import com.picpaysimplificado.repositories.TransferenciaRepository;
 import com.picpaysimplificado.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -24,13 +26,9 @@ public class TransferenciaService {
         Usuario remetente = buscaUsuario(transferencia.getIdRemetente());
         Usuario destinatario = buscaUsuario(transferencia.getIdDestinatario());
 
-        if (remetente.getTipo() == TipoUsuario.LOJISTA) {
-            throw new RuntimeException("Lojista não pode fazer transferancia");
-        }
+        if (!(remetente.podeTransferir())) throw new TransferenciaImpedidaException();
 
-        if (remetente.getSaldo().compareTo(transferencia.getQuantia()) < 0) {
-            throw new RuntimeException("Saldo insuficiente");
-        }
+        if (!(temSaldoSuficiente(remetente, transferencia.getQuantia()))) throw new SaldoInsuficienteException();
 
         remetente.debitar(transferencia.getQuantia());
         destinatario.creditar(transferencia.getQuantia());
@@ -42,5 +40,9 @@ public class TransferenciaService {
 
     private Usuario buscaUsuario(Long id) {
         return usuarioRepository.findById(id).orElseThrow();
+    }
+
+    private Boolean temSaldoSuficiente(Usuario usuario, BigDecimal quantidade) {
+        return usuario.getSaldo().compareTo(quantidade) >= 0;
     }
 }

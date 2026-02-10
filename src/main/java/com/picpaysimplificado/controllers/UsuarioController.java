@@ -1,8 +1,8 @@
 package com.picpaysimplificado.controllers;
 
 import com.picpaysimplificado.domain.usuario.Usuario;
-import com.picpaysimplificado.domain.usuario.dto.UsuarioRequestDTO;
-import com.picpaysimplificado.domain.usuario.dto.UsuarioResponseDTO;
+import com.picpaysimplificado.domain.usuario.dto.RegistroRequestDTO;
+import com.picpaysimplificado.domain.usuario.dto.RegistroResponseDTO;
 import com.picpaysimplificado.services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +21,9 @@ public class UsuarioController {
     UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> inserir(@RequestBody @Valid UsuarioRequestDTO body) {
+    public ResponseEntity<RegistroResponseDTO> inserir(@RequestBody @Valid RegistroRequestDTO body) {
         Usuario novoUsario = new Usuario(body);
-        UsuarioResponseDTO response = new UsuarioResponseDTO(usuarioService.inserir(novoUsario));
+        RegistroResponseDTO response = new RegistroResponseDTO(usuarioService.inserir(novoUsario));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

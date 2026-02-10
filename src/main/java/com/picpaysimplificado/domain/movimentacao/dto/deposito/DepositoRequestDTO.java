@@ -1,14 +1,12 @@
-package com.picpaysimplificado.domain.transferencia.dto;
+package com.picpaysimplificado.domain.movimentacao.dto.deposito;
 
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-public record TransferenciaRequestDTO(
+public record DepositoRequestDTO(
         @NotNull
         BigDecimal quantia,
-        @NotNull
-        Long idRemetente,
         @NotNull
         Long idDestinatario) {
 }

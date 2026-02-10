@@ -5,7 +5,7 @@ import com.picpaysimplificado.domain.usuario.Usuario;
 
 import java.math.BigDecimal;
 
-public record UsuarioResponseDTO(
+public record RegistroResponseDTO(
         Long id,
         String nomeCompleto,
         String cpf,
@@ -14,7 +14,7 @@ public record UsuarioResponseDTO(
         TipoUsuario tipo,
         BigDecimal saldo) {
 
-    public UsuarioResponseDTO(Usuario usuario) {
+    public RegistroResponseDTO(Usuario usuario) {
         this(usuario.getId(), usuario.getNomeCompleto(), usuario.getCpf(), usuario.getEmail(), usuario.getSenha(), usuario.getTipo(), usuario.getSaldo());
     }
 }
