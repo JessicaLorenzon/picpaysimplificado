@@ -1,6 +1,7 @@
 package com.picpaysimplificado.exceptions.handler;
 
 import com.picpaysimplificado.exceptions.SaldoInsuficienteException;
+import com.picpaysimplificado.exceptions.TransferenciaBloqueadaException;
 import com.picpaysimplificado.exceptions.TransferenciaImpedidaException;
 import com.picpaysimplificado.exceptions.UsuarioNaoEncontradoException;
 import org.springframework.http.HttpStatus;
@@ -36,9 +37,19 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(TransferenciaImpedidaException.class)
     public ProblemDetail transferenciaImpedida(TransferenciaImpedidaException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setTitle("Transferencia Impedida");
+        problemDetail.setTitle("Transferencia impedida");
         problemDetail.setDetail(e.getMessage());
         problemDetail.setType(URI.create("https://picpaysimplificado.com/errors/transferencia-impedida"));
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(TransferenciaBloqueadaException.class)
+    public ProblemDetail transacaoBloqueada(TransferenciaBloqueadaException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Transferencia bloqueada");
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setType(URI.create("https://picpaysimplificado.com/errors/transferencia-bloqueada"));
 
         return problemDetail;
     }

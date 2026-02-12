@@ -41,10 +41,6 @@ public class Usuario {
         this.saldo = BigDecimal.ZERO;
     }
 
-    public Boolean podeTransferir() {
-        return getTipo() != TipoUsuario.LOJISTA;
-    }
-
     public void debitar(BigDecimal valor) {
         this.saldo = this.saldo.subtract(valor);
     }

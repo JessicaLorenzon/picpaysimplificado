@@ -3,46 +3,59 @@ package com.picpaysimplificado.services;
 import com.picpaysimplificado.domain.transferencia.Transferencia;
 import com.picpaysimplificado.domain.usuario.Usuario;
 import com.picpaysimplificado.exceptions.SaldoInsuficienteException;
+import com.picpaysimplificado.exceptions.TransferenciaBloqueadaException;
 import com.picpaysimplificado.exceptions.TransferenciaImpedidaException;
 import com.picpaysimplificado.repositories.TransferenciaRepository;
-import com.picpaysimplificado.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 public class TransferenciaService {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
     @Autowired
     private TransferenciaRepository transferenciaRepository;
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Transactional
     public Transferencia transferir(Transferencia transferencia) {
-        Usuario remetente = buscaUsuario(transferencia.getIdRemetente());
-        Usuario destinatario = buscaUsuario(transferencia.getIdDestinatario());
+        Usuario remetente = usuarioService.buscaUsuario(transferencia.getIdRemetente());
+        Usuario destinatario = usuarioService.buscaUsuario(transferencia.getIdDestinatario());
 
-        if (!(remetente.podeTransferir())) throw new TransferenciaImpedidaException();
+        if (!(usuarioService.podeTransferir(remetente))) throw new TransferenciaImpedidaException();
 
-        if (!(temSaldoSuficiente(remetente, transferencia.getQuantia()))) throw new SaldoInsuficienteException();
+        if (!(usuarioService.temSaldoSuficiente(remetente, transferencia.getQuantia())))
+            throw new SaldoInsuficienteException();
+
+        if (!estaAutorizado()) throw new TransferenciaBloqueadaException();
+
+        Transferencia novaTransferencia =
+                new Transferencia(transferencia.getQuantia(), transferencia.getIdRemetente(), transferencia.getIdDestinatario(), LocalDateTime.now());
 
         remetente.debitar(transferencia.getQuantia());
         destinatario.creditar(transferencia.getQuantia());
 
-        Transferencia novaTransferencia = new Transferencia(transferencia.getQuantia(), transferencia.getIdRemetente(), transferencia.getIdDestinatario(), LocalDateTime.now());
-
         return transferenciaRepository.save(novaTransferencia);
     }
 
-    private Usuario buscaUsuario(Long id) {
-        return usuarioRepository.findById(id).orElseThrow();
+    public Boolean estaAutorizado() {
+        String url = "https://util.devi.tools/api/v2/authorize";
+
+        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            Map data = (Map) response.getBody().get("data");
+            return (Boolean) data.get("authorization");
+        } else return false;
     }
 
-    private Boolean temSaldoSuficiente(Usuario usuario, BigDecimal quantidade) {
-        return usuario.getSaldo().compareTo(quantidade) >= 0;
-    }
 }
