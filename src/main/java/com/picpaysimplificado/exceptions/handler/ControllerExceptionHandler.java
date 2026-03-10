@@ -1,9 +1,6 @@
 package com.picpaysimplificado.exceptions.handler;
 
-import com.picpaysimplificado.exceptions.SaldoInsuficienteException;
-import com.picpaysimplificado.exceptions.TransferenciaBloqueadaException;
-import com.picpaysimplificado.exceptions.TransferenciaImpedidaException;
-import com.picpaysimplificado.exceptions.UsuarioNaoEncontradoException;
+import com.picpaysimplificado.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -50,6 +47,16 @@ public class ControllerExceptionHandler {
         problemDetail.setTitle("Transferencia bloqueada");
         problemDetail.setDetail(e.getMessage());
         problemDetail.setType(URI.create("https://picpaysimplificado.com/errors/transferencia-bloqueada"));
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(NotificacaoForaDoArException.class)
+    public ProblemDetail notificacaooForaDoAr(NotificacaoForaDoArException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Notificação fora do ar");
+        problemDetail.setDetail(e.getMessage());
+        problemDetail.setType(URI.create("https://picpaysimplificado.com/errors/notificação-fora-do-ar"));
 
         return problemDetail;
     }

@@ -1,7 +1,9 @@
 package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.transferencia.Transferencia;
+import com.picpaysimplificado.domain.transferencia.dto.NotificacaoDTO;
 import com.picpaysimplificado.domain.usuario.Usuario;
+import com.picpaysimplificado.exceptions.NotificacaoForaDoArException;
 import com.picpaysimplificado.exceptions.SaldoInsuficienteException;
 import com.picpaysimplificado.exceptions.TransferenciaBloqueadaException;
 import com.picpaysimplificado.exceptions.TransferenciaImpedidaException;
@@ -38,11 +40,17 @@ public class TransferenciaService {
 
         if (!estaAutorizado()) throw new TransferenciaBloqueadaException();
 
-        Transferencia novaTransferencia =
-                new Transferencia(transferencia.getQuantia(), transferencia.getIdRemetente(), transferencia.getIdDestinatario(), LocalDateTime.now());
+        Transferencia novaTransferencia = new Transferencia();
+        novaTransferencia.setQuantia(transferencia.getQuantia());
+        novaTransferencia.setIdRemetente(remetente.getId());
+        novaTransferencia.setIdDestinatario(destinatario.getId());
+        novaTransferencia.setDataTransferencia(LocalDateTime.now());
 
         remetente.debitar(transferencia.getQuantia());
         destinatario.creditar(transferencia.getQuantia());
+
+        enviaNotificacao(remetente, "Transação realizada com sucesso");
+        enviaNotificacao(destinatario, "Transação recebida com sucesso");
 
         return transferenciaRepository.save(novaTransferencia);
     }
@@ -58,4 +66,16 @@ public class TransferenciaService {
         } else return false;
     }
 
+    public void enviaNotificacao(Usuario usuario, String mensagem) {
+        String email = usuario.getEmail();
+
+        NotificacaoDTO notificacaoRequest = new NotificacaoDTO(email, mensagem);
+
+        ResponseEntity<String> response = restTemplate.postForEntity("https://util.devi.tools/api/v1/notify", notificacaoRequest, String.class);
+
+        if (!(response.getStatusCode() == HttpStatus.OK)) {
+            System.out.println("erro ao enviar notificação");
+            throw new NotificacaoForaDoArException();
+        }
+    }
 }
