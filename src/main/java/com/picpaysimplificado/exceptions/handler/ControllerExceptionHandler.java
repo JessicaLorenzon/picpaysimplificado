@@ -1,8 +1,10 @@
 package com.picpaysimplificado.exceptions.handler;
 
 import com.picpaysimplificado.exceptions.*;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -57,6 +59,16 @@ public class ControllerExceptionHandler {
         problemDetail.setTitle("Notificação fora do ar");
         problemDetail.setDetail(e.getMessage());
         problemDetail.setType(URI.create("https://picpaysimplificado.com/errors/notificação-fora-do-ar"));
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail entradaDuplicada(DataIntegrityViolationException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Entrada duplicada");
+        problemDetail.setDetail("Usuário já cadastrado");
+        problemDetail.setType(URI.create("https://picpaysimplificado.com/errors/entrada-duplicada"));
 
         return problemDetail;
     }
