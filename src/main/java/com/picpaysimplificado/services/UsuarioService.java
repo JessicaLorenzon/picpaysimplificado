@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -18,6 +19,10 @@ public class UsuarioService {
 
     public Usuario buscaUsuario(Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new UsuarioNaoEncontradoException(id));
+    }
+
+    public List<Usuario> buscarTodos() {
+        return usuarioRepository.findAll();
     }
 
     @Transactional
