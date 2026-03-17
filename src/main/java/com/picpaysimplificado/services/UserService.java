@@ -16,10 +16,10 @@ public class UserService {
 
     @Transactional
     public User save(User user) {
-        return userRepository.save(user);
+        return this.userRepository.save(user);
     }
 
     public List<User> findAll() {
-        return userRepository.findAll();
+        return this.userRepository.findAll();
     }
 }

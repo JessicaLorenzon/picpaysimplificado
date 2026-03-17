@@ -43,4 +43,16 @@ public class User {
         this.balance = BigDecimal.ZERO;
         this.userType = userRequest.userType();
     }
+
+    public void deposit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        this.balance = this.balance.subtract(amount);
+    }
+
+    public Boolean hasSufficientBalance(User user, BigDecimal amount) {
+        return user.getBalance().compareTo(amount) >= 0;
+    }
 }
