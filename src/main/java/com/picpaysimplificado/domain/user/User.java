@@ -52,6 +52,10 @@ public class User {
         this.balance = this.balance.subtract(amount);
     }
 
+    public Boolean canTransfer() {
+        return getUserType() != UserType.SHOPKEEPER;
+    }
+
     public Boolean hasSufficientBalance(User user, BigDecimal amount) {
         return user.getBalance().compareTo(amount) >= 0;
     }
