@@ -1,6 +1,7 @@
 package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.user.User;
+import com.picpaysimplificado.exceptions.UserNotFoundException;
 import com.picpaysimplificado.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class UserService {
     @Transactional
     public User save(User user) {
         return this.userRepository.save(user);
+    }
+
+    public User findUserById(Long id) {
+        return this.userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     public List<User> findAll() {
