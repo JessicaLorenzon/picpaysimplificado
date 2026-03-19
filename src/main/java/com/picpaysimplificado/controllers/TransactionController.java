@@ -1,6 +1,5 @@
 package com.picpaysimplificado.controllers;
 
-import com.picpaysimplificado.domain.transaction.Transaction;
 import com.picpaysimplificado.domain.transaction.TransactionType;
 import com.picpaysimplificado.domain.transaction.dto.TransactionRequestDTO;
 import com.picpaysimplificado.domain.transaction.dto.TransactionResponseDTO;
@@ -23,19 +22,15 @@ public class TransactionController {
 
     @PostMapping("/deposit")
     public ResponseEntity<TransactionResponseDTO> deposit(@RequestBody @Valid TransactionRequestDTO transactionRequest) {
-        Transaction newTransaction = new Transaction(transactionRequest);
-        newTransaction.setTransactionType(TransactionType.DEPOSIT);
-        TransactionResponseDTO response = new TransactionResponseDTO(transactionService.transaction(newTransaction, TransactionType.DEPOSIT));
+        TransactionResponseDTO newTransaction = this.transactionService.transaction(transactionRequest, TransactionType.DEPOSIT);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
 
     @PostMapping("/withdraw")
     public ResponseEntity<TransactionResponseDTO> withdraw(@RequestBody @Valid TransactionRequestDTO transactionRequest) {
-        Transaction newTransaction = new Transaction(transactionRequest);
-        newTransaction.setTransactionType(TransactionType.WITHDRAW);
-        TransactionResponseDTO response = new TransactionResponseDTO(transactionService.transaction(newTransaction, TransactionType.WITHDRAW));
+        TransactionResponseDTO newTransaction = this.transactionService.transaction(transactionRequest, TransactionType.WITHDRAW);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(newTransaction, HttpStatus.OK);
     }
 }

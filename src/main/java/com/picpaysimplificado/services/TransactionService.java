@@ -2,15 +2,17 @@ package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.transaction.Transaction;
 import com.picpaysimplificado.domain.transaction.TransactionType;
+import com.picpaysimplificado.domain.transaction.dto.TransactionRequestDTO;
+import com.picpaysimplificado.domain.transaction.dto.TransactionResponseDTO;
 import com.picpaysimplificado.domain.user.User;
 import com.picpaysimplificado.exceptions.InsufficientFundsException;
 import com.picpaysimplificado.repositories.TransactionRepository;
-import com.picpaysimplificado.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class TransactionService {
@@ -21,17 +23,25 @@ public class TransactionService {
     private UserService userService;
 
     @Transactional
-    public Transaction transaction(Transaction transaction, TransactionType type) {
-        User user = this.userService.findUserById(transaction.getIdAffectedUser());
-        BigDecimal amount = transaction.getAmount();
+    public TransactionResponseDTO transaction(TransactionRequestDTO transactionRequest, TransactionType type) {
+        User user = this.userService.findUserById(transactionRequest.idAffectedUser());
+        BigDecimal amount = transactionRequest.amount();
 
         if (type == TransactionType.DEPOSIT) user.deposit(amount);
 
         if (type == TransactionType.WITHDRAW) {
-            if (!user.hasSufficientBalance(user,amount)) throw new InsufficientFundsException();
+            if (!user.hasSufficientBalance(user, amount)) throw new InsufficientFundsException();
             user.withdraw(amount);
         }
 
-        return this.transactionRepository.save(transaction);
+        Transaction newTransaction = new Transaction();
+        newTransaction.setIdAffectedUser(user.getId());
+        newTransaction.setAmount(amount);
+        newTransaction.setTransactionType(type);
+        newTransaction.setTimestamp(LocalDateTime.now());
+
+        this.transactionRepository.save(newTransaction);
+
+        return new TransactionResponseDTO(newTransaction);
     }
 }

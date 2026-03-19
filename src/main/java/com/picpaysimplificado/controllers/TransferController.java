@@ -1,6 +1,5 @@
 package com.picpaysimplificado.controllers;
 
-import com.picpaysimplificado.domain.transfer.Transfer;
 import com.picpaysimplificado.domain.transfer.dto.TransferRequestDTO;
 import com.picpaysimplificado.domain.transfer.dto.TransferResponseDTO;
 import com.picpaysimplificado.services.TransferService;

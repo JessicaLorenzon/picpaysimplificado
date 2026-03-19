@@ -40,7 +40,7 @@ public class TransferService {
 
         if (!this.authorizationService.authorizeTransaction()) throw new UnauthorizedTransferException();
 
-        Transfer newTransfer =  new Transfer();
+        Transfer newTransfer = new Transfer();
         newTransfer.setAmount(transferRequest.amount());
         newTransfer.setSender(sender);
         newTransfer.setReciever(reciever);
