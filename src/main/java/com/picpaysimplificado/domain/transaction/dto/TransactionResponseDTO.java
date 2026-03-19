@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 
 public record TransactionResponseDTO(
         Long id,
-        Long idAffectedUser,
+        Long affectedUserId,
         BigDecimal amount,
         TransactionType transactionType,
         LocalDateTime timestamp) {
 
     public TransactionResponseDTO(Transaction transaction) {
-        this(transaction.getId(), transaction.getIdAffectedUser(), transaction.getAmount(), transaction.getTransactionType(), transaction.getTimestamp());
+        this(transaction.getId(), transaction.getAffectedUserId(), transaction.getAmount(), transaction.getTransactionType(), transaction.getTimestamp());
     }
 }

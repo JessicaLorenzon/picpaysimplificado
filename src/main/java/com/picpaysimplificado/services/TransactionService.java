@@ -24,7 +24,7 @@ public class TransactionService {
 
     @Transactional
     public TransactionResponseDTO transaction(TransactionRequestDTO transactionRequest, TransactionType type) {
-        User user = this.userService.findUserById(transactionRequest.idAffectedUser());
+        User user = this.userService.findUserById(transactionRequest.affectedUserId());
         BigDecimal amount = transactionRequest.amount();
 
         if (type == TransactionType.DEPOSIT) user.deposit(amount);
@@ -35,7 +35,7 @@ public class TransactionService {
         }
 
         Transaction newTransaction = new Transaction();
-        newTransaction.setIdAffectedUser(user.getId());
+        newTransaction.setAffectedUserId(user.getId());
         newTransaction.setAmount(amount);
         newTransaction.setTransactionType(type);
         newTransaction.setTimestamp(LocalDateTime.now());

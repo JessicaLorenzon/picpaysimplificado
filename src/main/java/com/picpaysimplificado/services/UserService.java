@@ -1,12 +1,15 @@
 package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.user.User;
+import com.picpaysimplificado.domain.user.dto.UserRequestDTO;
+import com.picpaysimplificado.domain.user.dto.UserResponseDTO;
 import com.picpaysimplificado.exceptions.UserNotFoundException;
 import com.picpaysimplificado.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -16,8 +19,18 @@ public class UserService {
     private UserRepository userRepository;
 
     @Transactional
-    public User save(User user) {
-        return this.userRepository.save(user);
+    public UserResponseDTO save(UserRequestDTO userRequest) {
+        User newUser = new User();
+        newUser.setFullName(userRequest.fullName());
+        newUser.setCPF(userRequest.CPF());
+        newUser.setEmail(userRequest.email());
+        newUser.setPassword(userRequest.password());
+        newUser.setBalance(BigDecimal.ZERO);
+        newUser.setUserType(userRequest.userType());
+
+        this.userRepository.save(newUser);
+
+        return new UserResponseDTO(newUser);
     }
 
     public User findUserById(Long id) {

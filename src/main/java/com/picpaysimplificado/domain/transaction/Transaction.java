@@ -1,6 +1,5 @@
 package com.picpaysimplificado.domain.transaction;
 
-import com.picpaysimplificado.domain.transaction.dto.TransactionRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +21,7 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long idAffectedUser;
+    private Long affectedUserId;
 
     private BigDecimal amount;
 
@@ -30,10 +29,4 @@ public class Transaction {
     private TransactionType transactionType;
 
     private LocalDateTime timestamp;
-
-    public Transaction(TransactionRequestDTO transactionRequest) {
-        this.idAffectedUser = transactionRequest.idAffectedUser();
-        this.amount = transactionRequest.amount();
-        this.timestamp = LocalDateTime.now();
-    }
 }

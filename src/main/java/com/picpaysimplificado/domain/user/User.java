@@ -1,6 +1,5 @@
 package com.picpaysimplificado.domain.user;
 
-import com.picpaysimplificado.domain.user.dto.UserRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,15 +33,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserType userType;
-
-    public User(UserRequestDTO userRequest) {
-        this.fullName = userRequest.fullName();
-        this.CPF = userRequest.CPF();
-        this.email = userRequest.email();
-        this.password = userRequest.password();
-        this.balance = BigDecimal.ZERO;
-        this.userType = userRequest.userType();
-    }
 
     public void deposit(BigDecimal amount) {
         this.balance = this.balance.add(amount);

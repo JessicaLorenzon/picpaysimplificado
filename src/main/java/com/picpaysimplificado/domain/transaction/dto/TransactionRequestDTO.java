@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public record TransactionRequestDTO(
         @NotNull
-        Long idAffectedUser,
+        Long affectedUserId,
         @NotNull
         BigDecimal amount) {
 }

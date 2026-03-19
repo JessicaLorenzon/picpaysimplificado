@@ -25,9 +25,6 @@ public class TransferService {
     @Autowired
     private AuthorizationService authorizationService;
 
-    @Autowired
-    private NotificationService notificationService;
-
     @Transactional
     public TransferResponseDTO transfer(TransferRequestDTO transferRequest) {
         User sender = this.userService.findUserById(transferRequest.senderId());
