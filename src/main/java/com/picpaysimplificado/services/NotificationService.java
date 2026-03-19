@@ -1,8 +1,10 @@
 package com.picpaysimplificado.services;
 
 import com.picpaysimplificado.domain.transfer.dto.NotificationDTO;
-import com.picpaysimplificado.domain.user.User;
+import com.picpaysimplificado.exceptions.NotificationNotSentException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,18 +14,22 @@ public class NotificationService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public void sendNotification(User user, String message) {
-        String email = user.getEmail();
+    @Autowired
+    private UserService userService;
+
+    public void sendNotification(Long id, String message) {
+        String email = this.userService.findUserById(id).getEmail();
         NotificationDTO notificationRequest = new NotificationDTO(email, message);
 
-//        ResponseEntity<String> notificationResponse = restTemplate.postForEntity("https://util.devi.tools/api/v1/notify", notificationRequest, String.class);
-//
-//        if (!(notificationResponse.getStatusCode() == HttpStatus.OK)) {
-//            System.out.println("Error sending notification");
-//            throw new NotificationNotSentException();
-//        }
+        try {
+            ResponseEntity<String> response =
+                    restTemplate.postForEntity("https://util.devi.tools/api/v1/notify", notificationRequest, String.class);
 
-        System.out.println("Notification sent to the user");
-
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new NotificationNotSentException();
+            }
+        } catch (Exception ex) {
+            throw new NotificationNotSentException();
+        }
     }
 }

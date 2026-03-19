@@ -6,7 +6,6 @@ import com.picpaysimplificado.domain.transfer.dto.TransferResponseDTO;
 import com.picpaysimplificado.domain.user.User;
 import com.picpaysimplificado.exceptions.InsufficientFundsException;
 import com.picpaysimplificado.exceptions.TransferBlockedException;
-import com.picpaysimplificado.exceptions.UnauthorizedTransferException;
 import com.picpaysimplificado.repositories.TransferRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class TransferService {
 
         if (!sender.hasSufficientBalance(sender, transferRequest.amount())) throw new InsufficientFundsException();
 
-        if (!this.authorizationService.authorizeTransaction()) throw new UnauthorizedTransferException();
+        this.authorizationService.authorizeTransfer();
 
         Transfer newTransfer = new Transfer();
         newTransfer.setAmount(transferRequest.amount());
@@ -50,9 +49,6 @@ public class TransferService {
         reciever.deposit(transferRequest.amount());
 
         this.transferRepository.save(newTransfer);
-
-        this.notificationService.sendNotification(sender, "Transfer completed successfully");
-        this.notificationService.sendNotification(reciever, "Transfer received successfully.");
 
         return new TransferResponseDTO(newTransfer);
     }

@@ -1,8 +1,8 @@
 package com.picpaysimplificado.services;
 
+import com.picpaysimplificado.exceptions.UnauthorizedTransferException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,12 +18,21 @@ public class AuthorizationService {
     @Value("${app.authorizationApi}")
     private String authApiUrl;
 
-    public boolean authorizeTransaction() {
-        ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity(this.authApiUrl, Map.class);
+    public void authorizeTransfer() {
+        try {
+            ResponseEntity<Map> authorizationResponse = restTemplate.getForEntity(this.authApiUrl, Map.class);
 
-        if (authorizationResponse.getStatusCode() == HttpStatus.OK) {
-            Map data = (Map) authorizationResponse.getBody().get("data");
-            return (Boolean) data.get("authorization");
-        } else return false;
+            Map body = authorizationResponse.getBody();
+            String status = (String) body.get("status");
+            Map data = (Map) body.get("data");
+            Boolean authorization = (Boolean) data.get("authorization");
+
+            if (!"success".equals(status) || !authorization.equals(true)) {
+                throw new UnauthorizedTransferException();
+            }
+
+        } catch (Exception ex) {
+            throw new UnauthorizedTransferException();
+        }
     }
 }
